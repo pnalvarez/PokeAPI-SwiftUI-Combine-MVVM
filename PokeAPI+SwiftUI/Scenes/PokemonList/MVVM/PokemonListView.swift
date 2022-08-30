@@ -20,15 +20,13 @@ struct PokemonListView<ViewModel: PokemonListViewModelProtocol>: View {
             }
             .pickerStyle(.segmented)
             List(viewModel.pokemonList.indexed(), id: \.index) { item in
-                VStack {
-                    PokemonListItemView(index: "\(item.element.index)",
-                                        name: item.element.model.name)
-                    .onAppear(perform: { viewModel.itemDidAppear(item.index) })
-                    .onTapGesture {
-                        viewModel.didSelectItem(item.index)
-                    }
-                .listStyle(.inset)
+                PokemonListItemView(index: "\(item.element.index)",
+                                    name: item.element.model.name)
+                .onAppear(perform: { viewModel.itemDidAppear(item.index) })
+                .onTapGesture {
+                    viewModel.didSelectItem(item.index)
                 }
+                .listStyle(.inset)
             }
         }
         .navigationTitle(viewModel.title)
