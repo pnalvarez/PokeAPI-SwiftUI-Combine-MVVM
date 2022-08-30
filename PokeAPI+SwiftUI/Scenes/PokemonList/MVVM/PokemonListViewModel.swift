@@ -14,6 +14,7 @@ protocol PokemonListViewModelProtocol: ObservableObject {
     var title: String { get }
     
     func onAppear()
+    func itemDidAppear(_ index: Int)
     func didSelectItem(_ index: Int)
 }
 
@@ -46,6 +47,13 @@ final class PokemonListViewModel: PokemonListViewModelProtocol {
         fetchPokemonList {
             self.currentIndex += self.pageSize - 1
         }
+    }
+    
+    func itemDidAppear(_ index: Int) {
+        print("item appear \(index)")
+        guard index >= currentIndex - 2 else { return }
+        currentIndex += pageSize
+        fetchPokemonList()
     }
     
     func didSelectItem(_ index: Int) {

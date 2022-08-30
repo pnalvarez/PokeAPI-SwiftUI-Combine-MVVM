@@ -19,23 +19,21 @@ struct PokemonListView<ViewModel: PokemonListViewModelProtocol>: View {
                 }
             }
             .pickerStyle(.segmented)
-            List {
+            List(viewModel.pokemonList.indexed(), id: \.index) { item in
                 VStack {
-                    ForEach(viewModel.pokemonList.indexed(), id: \.index) { item in
-                        PokemonListItemView(index: "\(item.element.index)",
-                                            name: item.element.model.name)
-                        .onTapGesture {
-                            viewModel.didSelectItem(item.index)
-                        }
+                    PokemonListItemView(index: "\(item.element.index)",
+                                        name: item.element.model.name)
+                    .onAppear(perform: { viewModel.itemDidAppear(item.index) })
+                    .onTapGesture {
+                        viewModel.didSelectItem(item.index)
                     }
-                    ProgressView()
-                        .onAppear(perform: viewModel.onAppear)
+                .listStyle(.inset)
                 }
-                .listRowBackground(Color.blue)
             }
         }
         .navigationTitle(viewModel.title)
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear(perform: viewModel.onAppear)
     }
 }
 

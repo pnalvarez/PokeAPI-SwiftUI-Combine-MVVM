@@ -24,7 +24,6 @@ struct PokemonListItemView: View {
         .padding(12)
         .border(Color.black, width: 1)
         .background(Color.white.cornerRadius(4))
-        .listRowBackground(Color.red)
     }
 }
 
