@@ -14,7 +14,11 @@ struct PokemonListCoordinatorView<ViewModel: PokemonListCoordinatorViewModelInpu
     var body: some View {
         NavigationView {
             ZStack {
-                NavigationLink(destination: Text("Hello world"), tag: "PokemonDetails", selection: $viewModel.navigationItem) { EmptyView() }
+                ForEach(viewModel.navigationItemLinkCases) { item in
+                    NavigationLink(tag: item,
+                                   selection: $viewModel.navigationItem,
+                                   destination: item.nextView) { EmptyView() }
+                }
                 content
                     .navigationTitle(viewModel.title)
             }

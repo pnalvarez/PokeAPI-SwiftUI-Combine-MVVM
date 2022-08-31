@@ -18,6 +18,7 @@ protocol PokemonDetailsViewModelProtocol: ObservableObject {
     var hasError: Bool { get }
     var errorTitle: String { get }
     var errorMessage: String { get }
+    var isLoading: Bool { get }
     func onAppear()
 }
 
@@ -48,6 +49,7 @@ final class PokemonDetailsViewModel: PokemonDetailsViewModelProtocol {
     var defaultImage: String = Strings.defaultImage
     
     var hasError: Bool = false
+    var isLoading: Bool = true
     var errorTitle: String = Strings.errorTitle
     var errorMessage: String = Strings.defaultErrorMessage
     
@@ -56,7 +58,7 @@ final class PokemonDetailsViewModel: PokemonDetailsViewModelProtocol {
     init(id: String,
          service: PokemonDetailsServiceProtocol = PokemonDetailsService(),
          coordinator: PokemonDetailsCoordinatorProtocol = PokemonDetailsCoordinatorViewModel()) {
-        self.id = id
+        self.id = String(id.split(separator: "/").last ?? "")
         self.service = service
         self.coordinator = coordinator
         initializeSubscriptions()
@@ -67,6 +69,7 @@ final class PokemonDetailsViewModel: PokemonDetailsViewModelProtocol {
         subscription = service
             .fetchDetails(id: id)
             .sink(receiveCompletion: { completion in
+                self.isLoading = false
                 switch completion {
                 case let .failure(error):
                     self.errorMessage = error.localizedDescription
@@ -103,8 +106,8 @@ final class PokemonDetailsViewModel: PokemonDetailsViewModelProtocol {
         $model
             .map(\.?.types)
             .replaceNil(with: [])
-            .map({ String(format: Strings.nameFormat, $0.joined(separator: ",")) })
-            .assign(to: &$name)
+            .map({ String(format: Strings.typesFormat, $0.joined(separator: ",")) })
+            .assign(to: &$types)
         $model
             .map(\.?.image)
             .replaceNil(with: "")

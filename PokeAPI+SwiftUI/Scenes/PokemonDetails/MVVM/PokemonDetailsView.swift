@@ -11,8 +11,11 @@ struct PokemonDetailsView<ViewModel: PokemonDetailsViewModelProtocol>: View {
     @ObservedObject var viewModel: ViewModel
     
     var body: some View {
-        NavigationView {
-            if viewModel.hasError {
+        Group {
+            if viewModel.isLoading {
+                ProgressView()
+            }
+            else if viewModel.hasError {
                 VStack {
                     Text(viewModel.errorTitle)
                         .font(.title)
@@ -44,6 +47,7 @@ struct PokemonDetailsView<ViewModel: PokemonDetailsViewModelProtocol>: View {
                 }
             }
         }
+        .onAppear(perform: viewModel.onAppear)
     }
 }
 

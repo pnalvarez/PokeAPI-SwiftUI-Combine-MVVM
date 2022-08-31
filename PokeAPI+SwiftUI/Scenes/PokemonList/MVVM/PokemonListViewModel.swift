@@ -50,8 +50,7 @@ final class PokemonListViewModel: PokemonListViewModelProtocol {
     }
     
     func itemDidAppear(_ index: Int) {
-        print("item appear \(index)")
-        guard index >= currentIndex - 2 else { return }
+        guard index >= currentIndex - 1 else { return }
         currentIndex += pageSize
         fetchPokemonList()
     }

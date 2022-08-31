@@ -29,10 +29,10 @@ struct PokemonDetailsModel: Decodable {
         self.height = try container.decode(Int.self, forKey: .height)
         self.weight = try container.decode(Int.self, forKey: .weight)
         
-        let sprites = try container.decode([String : String].self, forKey: .sprites)
-        self.image = sprites["front_default"] ?? ""
+        let typesArray = try container.decode([PokemonTypeItemModel].self, forKey: .types)
+        self.types = typesArray.map({ $0.type.name })
         
-        let typesDict = try container.decode([[String : String]].self, forKey: .types)
-        self.types = typesDict.map({ $0["name"] ?? ""})
+        let sprites = try container.decode(PokemonSpriteModel.self, forKey: .sprites)
+        self.image = sprites.frontDefault
     }
 }

@@ -4,32 +4,48 @@
 //
 //  Created by Pedro Alvarez on 22/08/22.
 //
-
+import Combine
 import SwiftUI
+
+enum PokemonListNavigationLinkItem: NavigationItem {
+    case pokemonDetails(_ id: String)
+    
+    @ViewBuilder
+    func nextView() -> some View {
+        switch self {
+        case let .pokemonDetails(id):
+            PokemonDetailsSceneFactory.build(id: id)
+        }
+    }
+}
 
 protocol PokemonListCoordinatorViewModelProtocol {
     func navigateToPokemonDetails(_ model: PokemonListItemDataViewModel)
 }
 
 protocol PokemonListCoordinatorViewModelInput: ObservableObject {
-    var navigationItem: String? { get set }
-    var pokemon: PokemonListItemDataViewModel? { get }
+    var navigationItem: PokemonListNavigationLinkItem? { get set }
+    var navigationItemLinkCases: [PokemonListNavigationLinkItem] { get set }
     var title: String { get }
 }
 
 final class PokemonListCoordinatorViewModel: PokemonListCoordinatorViewModelInput, ObservableObject {
-    enum NavigationItem {
-        static let pokemonDetails = "PokemonDetails"
-    }
-    
-    @Published var navigationItem: String?
-    @Published var pokemon: PokemonListItemDataViewModel?
+    @Published var navigationItem: PokemonListNavigationLinkItem?
+    var navigationItemLinkCases: [PokemonListNavigationLinkItem] = []
     let title: String = "Pokemon List"
+    
+    private var subscription: AnyCancellable?
+    
+    init() {
+        subscription = $navigationItem.sink(receiveValue: { item in
+            guard let item = item else { return }
+            self.navigationItemLinkCases.append(item)
+        })
+    }
 }
 
 extension PokemonListCoordinatorViewModel: PokemonListCoordinatorViewModelProtocol {
     func navigateToPokemonDetails(_ model: PokemonListItemDataViewModel) {
-        pokemon = model
-        navigationItem = NavigationItem.pokemonDetails
+        navigationItem = .pokemonDetails(model.model.url)
     }
 }
