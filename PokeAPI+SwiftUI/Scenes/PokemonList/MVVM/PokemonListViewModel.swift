@@ -65,7 +65,7 @@ final class PokemonListViewModel {
         return newArray
     }
     
-    private func fetchPokemonList(completion: @escaping () -> Void = { }) {
+    private func fetchPokemonList(completion: @escaping () -> Void) {
        service.fetchPokemonList(offset: currentIndex, limit: pageSize)
             .replaceError(with: [])
             .map(mapToDataViewModel)
@@ -73,12 +73,10 @@ final class PokemonListViewModel {
             .flatMap({ self.service.fetchPokemonDetails(id: "\($0.id)")
                     .replaceError(with: .init(id: 0, name: "", image: ""))
             })
-            .sink(receiveValue: { value in
-                self.pokemonList.append(value)
-                self.pokemonList.sort(by: self.sortCriteria.comparisonMethod)
-                completion()
-            })
-            .store(in: &cancellables)
+            .collect()
+            .append(to: &pokemonList)
+            .assign(to: &$pokemonList,
+                    completion: completion)
     }
 }
 
@@ -94,7 +92,7 @@ extension PokemonListViewModel: PokemonListViewModelProtocol {
     func itemDidAppear(_ index: Int) {
         guard index >= currentIndex - 1 else { return }
         currentIndex += pageSize
-        fetchPokemonList()
+        fetchPokemonList(completion: { })
     }
     
     func didSelectItem(_ index: Int) {
