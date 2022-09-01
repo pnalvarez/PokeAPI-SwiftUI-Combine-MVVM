@@ -12,21 +12,26 @@ struct PokemonListView<ViewModel: PokemonListViewModelProtocol>: View {
     
     var body: some View {
         VStack {
-            Picker("Sorting criteria", selection: $viewModel.sortCriteria) {
-                ForEach(PokemonListSortCriteria.allCases,
-                        id: \.self) { item in
-                    Text(item.rawValue)
+            if viewModel.isLoading {
+                ProgressView()
+            } else {
+                Picker("Sorting criteria", selection: $viewModel.sortCriteria) {
+                    ForEach(PokemonListSortCriteria.allCases,
+                            id: \.self) { item in
+                        Text(item.rawValue)
+                    }
                 }
-            }
-            .pickerStyle(.segmented)
-            List(viewModel.pokemonList.indexed(), id: \.index) { item in
-                PokemonListItemView(index: "\(item.element.index)",
-                                    name: item.element.model.name)
-                .onAppear(perform: { viewModel.itemDidAppear(item.index) })
-                .onTapGesture {
-                    viewModel.didSelectItem(item.index)
+                .pickerStyle(.segmented)
+                List(viewModel.pokemonList.indexed(), id: \.index) { item in
+                    PokemonListItemView(index: "\(item.element.id)",
+                                        name: item.element.name,
+                                        url: URL(string: item.element.image))
+                    .onAppear(perform: { viewModel.itemDidAppear(item.index) })
+                    .onTapGesture {
+                        viewModel.didSelectItem(item.index)
+                    }
+                    .listStyle(.inset)
                 }
-                .listStyle(.inset)
             }
         }
         .navigationTitle(viewModel.title)

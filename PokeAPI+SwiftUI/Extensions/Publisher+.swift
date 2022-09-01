@@ -23,4 +23,14 @@ extension Publisher where Self.Failure == Never {
             })
             .eraseToAnyPublisher()
     }
+    
+    func uncollect<T>(_ transform: @escaping (Output) -> [T]) -> AnyPublisher<T, Failure> {
+      self
+        .flatMap { output -> AnyPublisher<T, Failure> in
+          JustSeveral(transform(output))
+            .setFailureType(to: Failure.self)
+            .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
+    }
 }

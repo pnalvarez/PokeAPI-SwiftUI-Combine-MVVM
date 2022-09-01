@@ -20,7 +20,7 @@ enum PokemonListNavigationLinkItem: NavigationItem {
 }
 
 protocol PokemonListCoordinatorViewModelProtocol {
-    func navigateToPokemonDetails(_ model: PokemonListItemDataViewModel)
+    func navigateToPokemonDetails(_ model: PokemonListDetailsModel)
 }
 
 protocol PokemonListCoordinatorViewModelInput: ObservableObject {
@@ -45,7 +45,7 @@ final class PokemonListCoordinatorViewModel: PokemonListCoordinatorViewModelInpu
 }
 
 extension PokemonListCoordinatorViewModel: PokemonListCoordinatorViewModelProtocol {
-    func navigateToPokemonDetails(_ model: PokemonListItemDataViewModel) {
-        navigationItem = .pokemonDetails(model.model.url)
+    func navigateToPokemonDetails(_ model: PokemonListDetailsModel) {
+        navigationItem = .pokemonDetails("\(model.id)")
     }
 }

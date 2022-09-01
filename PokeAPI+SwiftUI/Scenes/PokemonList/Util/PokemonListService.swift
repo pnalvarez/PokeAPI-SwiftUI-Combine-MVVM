@@ -9,7 +9,8 @@ import Foundation
 import Combine
 
 protocol PokemonListServiceProtocol {
-    func fetchPokemonList(offset: Int, limit: Int) -> AnyPublisher<[PokemonListItemModel], Never>
+    func fetchPokemonList(offset: Int, limit: Int) -> AnyPublisher<[PokemonListItemModel], Error>
+    func fetchPokemonDetails(id: String)  -> AnyPublisher<PokemonListDetailsModel, Error>
 }
 
 final class PokemonListService {
@@ -21,18 +22,23 @@ final class PokemonListService {
 }
 
 extension PokemonListService: PokemonListServiceProtocol {
-    func fetchPokemonList(offset: Int, limit: Int) -> AnyPublisher<[PokemonListItemModel], Never> {
+    func fetchPokemonList(offset: Int, limit: Int) -> AnyPublisher<[PokemonListItemModel], Error> {
         let publisher: AnyPublisher<PokemonListModel, Error> =
         api.request(endpoint: PokemonListEndpoint.pokemonList(offset: offset,
                                                               limit: limit))
         
         return publisher
             .map(\.results)
-            .replaceError(with: [])
             .receive(on: DispatchQueue.main)
-            .handleEvents(receiveOutput: {
-                print("Service received output: \($0)")
-            })
+            .eraseToAnyPublisher()
+    }
+    
+    func fetchPokemonDetails(id: String) -> AnyPublisher<PokemonListDetailsModel, Error> {
+        let publisher: AnyPublisher<PokemonListDetailsModel, Error>
+        = api.request(endpoint: PokemonListEndpoint.pokemonDetails(id))
+        
+        return publisher
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 }

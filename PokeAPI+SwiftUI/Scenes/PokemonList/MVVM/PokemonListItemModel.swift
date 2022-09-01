@@ -11,6 +11,10 @@ struct PokemonListItemDataViewModel {
     let index: Int
     let model: PokemonListItemModel
     
+    var id: String {
+        String(model.url.split(separator: "/").last ?? "")
+    }
+    
     static var defaultValue: PokemonListItemDataViewModel {
         .init(index: 0, model: PokemonListItemModel(name: "", url: ""))
     }

@@ -10,12 +10,14 @@ import SwiftUI
 struct PokemonListItemView: View {
     let index: String
     let name: String
+    let url: URL?
     
     var body: some View {
         HStack {
             Text(index)
                 .font(.system(size: 12))
                 .padding(.trailing, 32)
+            PokemonImageView(url: url)
             Text(name)
                 .font(.system(size: 12))
                 .bold()
@@ -30,7 +32,7 @@ struct PokemonListItemView: View {
 struct PokemonListItemView_Previews: PreviewProvider {
     static var previews: some View {
         List {
-            PokemonListItemView(index: "1.", name: "Bulbasaur")
+            PokemonListItemView(index: "1.", name: "Bulbasaur", url: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/8.png"))
                 .previewLayout(.sizeThatFits)
         }
         .listStyle(.sidebar)

@@ -9,12 +9,21 @@ enum PokemonListSortCriteria: String, CaseIterable {
     case alphabetically
     case numerical
     
-    var sortingMethod: ([PokemonListItemDataViewModel]) -> [PokemonListItemDataViewModel] {
+    var sortingMethod: ([PokemonListDetailsModel]) -> [PokemonListDetailsModel] {
         switch self {
         case .alphabetically:
-            return { $0.sorted(by: { $0.model.name < $1.model.name })}
+            return { $0.sorted(by: { $0.name < $1.name })}
         case .numerical:
-            return { $0.sorted(by: { $0.index < $1.index })}
+            return { $0.sorted(by: { $0.id < $1.id })}
+        }
+    }
+    
+    var comparisonMethod: (PokemonListDetailsModel, PokemonListDetailsModel) -> Bool {
+        switch self {
+        case .alphabetically:
+            return { $0.name < $1.name }
+        case .numerical:
+            return { $0.id < $1.id }
         }
     }
 }

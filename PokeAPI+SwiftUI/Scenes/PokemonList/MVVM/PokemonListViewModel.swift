@@ -8,31 +8,39 @@
 import Combine
 
 protocol PokemonListViewModelProtocol: ObservableObject {
-    var pokemonList: [PokemonListItemDataViewModel] { get set }
+    var pokemonList: [PokemonListDetailsModel] { get set }
     var sortCriteria: PokemonListSortCriteria { get set }
     var listIsFull: Bool { get }
     var title: String { get }
+    var isLoading: Bool { get }
     
     func onAppear()
     func itemDidAppear(_ index: Int)
     func didSelectItem(_ index: Int)
 }
 
-final class PokemonListViewModel: PokemonListViewModelProtocol {
-    @Published var pokemonList: [PokemonListItemDataViewModel] = []
+final class PokemonListViewModel {
+    // - MARK: Published properties
+    @Published var pokemonList: [PokemonListDetailsModel] = []
     @Published var sortCriteria: PokemonListSortCriteria = .numerical
-    @Published var listIsFull: Bool = false
     
+    // - MARK: State properties
+    var listIsFull: Bool = false
+    var isLoading: Bool = true
     let title: String = "Pokemon List"
     
+    // - MARK: Layer properties
     private let service: PokemonListServiceProtocol
     private let coordinator: PokemonListCoordinatorViewModelProtocol
     
-    @Published var currentIndex: Int = 0
+    // - MARK: Logical properties
+    private var currentIndex: Int = 0
     private let pageSize: Int = 20
     
+    // - MARK: Combine cancellables
     private var cancellables = Set<AnyCancellable>()
     
+    // - MARK: Initializer
     init(service: PokemonListServiceProtocol = PokemonListService(),
          coordinator: PokemonListCoordinatorViewModelProtocol = PokemonListCoordinatorViewModel()) {
         self.service = service
@@ -43,8 +51,42 @@ final class PokemonListViewModel: PokemonListViewModelProtocol {
         .store(in: &cancellables)
     }
     
+    // - MARK: Private methods
+    
+    private func mapToDataViewModel(_ array: [PokemonListItemModel]) -> [PokemonListItemDataViewModel] {
+        var newArray = [PokemonListItemDataViewModel]()
+        let limit = array.count
+        let offset = self.pokemonList.count
+        for i in (offset..<offset + limit) {
+            let index = i - offset
+            newArray.append(.init(index: i,
+                                  model: array[index]))
+        }
+        return newArray
+    }
+    
+    private func fetchPokemonList(completion: @escaping () -> Void = { }) {
+       service.fetchPokemonList(offset: currentIndex, limit: pageSize)
+            .replaceError(with: [])
+            .map(mapToDataViewModel)
+            .uncollect({ $0 })
+            .flatMap({ self.service.fetchPokemonDetails(id: "\($0.id)")
+                    .replaceError(with: .init(id: 0, name: "", image: ""))
+            })
+            .sink(receiveValue: { value in
+                self.pokemonList.append(value)
+                self.pokemonList.sort(by: self.sortCriteria.comparisonMethod)
+                completion()
+            })
+            .store(in: &cancellables)
+    }
+}
+
+// - MARK: Input methods
+extension PokemonListViewModel: PokemonListViewModelProtocol {
     func onAppear() {
         fetchPokemonList {
+            self.isLoading = false
             self.currentIndex += self.pageSize - 1
         }
     }
@@ -58,25 +100,11 @@ final class PokemonListViewModel: PokemonListViewModelProtocol {
     func didSelectItem(_ index: Int) {
         coordinator.navigateToPokemonDetails(pokemonList[index])
     }
-    
-    private func fetchPokemonList(completion: () -> Void = { }) {
-        service.fetchPokemonList(offset: currentIndex, limit: pageSize)
-            .map(mapToDataViewModel)
-            .append(to: &pokemonList)
-            .assign(to: &$pokemonList,
-                    completion: completion)
-    }
-    
-    private func mapToDataViewModel(_ array: [PokemonListItemModel]) -> [PokemonListItemDataViewModel] {
-        var newArray = [PokemonListItemDataViewModel]()
-        let limit = array.count
-        let offset = self.pokemonList.count
-        for i in (offset..<offset + limit) {
-            let index = i - offset
-            newArray.append(.init(index: i,
-                                  model: array[index]))
-        }
-        newArray = sortCriteria.sortingMethod(newArray)
-        return newArray
-    }
 }
+
+
+
+
+
+
+
