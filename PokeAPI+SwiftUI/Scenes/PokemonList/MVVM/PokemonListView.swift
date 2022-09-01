@@ -25,7 +25,7 @@ struct PokemonListView<ViewModel: PokemonListViewModelProtocol>: View {
                 List(viewModel.pokemonList.indexed(), id: \.index) { item in
                     PokemonListItemView(index: "\(item.element.id)",
                                         name: item.element.name,
-                                        url: URL(string: item.element.image))
+                                        url: URL(string: item.element.image), types: item.element.types)
                     .onAppear(perform: { viewModel.itemDidAppear(item.index) })
                     .onTapGesture {
                         viewModel.didSelectItem(item.index)

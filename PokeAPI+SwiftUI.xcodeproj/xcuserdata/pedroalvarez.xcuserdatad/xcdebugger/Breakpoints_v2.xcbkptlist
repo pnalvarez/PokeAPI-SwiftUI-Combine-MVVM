@@ -7,32 +7,32 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "846D3BCC-84E3-489E-B560-7FEC6D7C899F"
+            uuid = "620AEFB5-D085-4B5F-8B0A-592A40CB6E57"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PokeAPI+SwiftUI/Scenes/PokemonList/MVVM/PokemonListViewModel.swift"
+            filePath = "PokeAPI+SwiftUI/Scenes/PokemonList/MVVM/PokemonListDetailsModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "85"
-            endingLineNumber = "85"
-            landmarkName = "onAppear()"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "init(from:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "E0311FD0-BF6C-4A5B-97FE-15A3DCE6F949"
+            uuid = "AE3BB93A-21E5-4E59-ACEE-1CAB815A59D3"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PokeAPI+SwiftUI/Scenes/PokemonList/MVVM/PokemonListViewModel.swift"
+            filePath = "PokeAPI+SwiftUI/Scenes/PokemonList/MVVM/PokemonListDetailsModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "87"
-            endingLineNumber = "87"
-            landmarkName = "onAppear()"
+            startingLineNumber = "22"
+            endingLineNumber = "22"
+            landmarkName = "init(from:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

@@ -67,16 +67,16 @@ final class PokemonListViewModel {
     
     private func fetchPokemonList(completion: @escaping () -> Void) {
        service.fetchPokemonList(offset: currentIndex, limit: pageSize)
-            .replaceError(with: [])
-            .map(mapToDataViewModel)
-            .uncollect({ $0 })
+            .replaceError(with: []) //Transforms Failure into Never
+            .map(mapToDataViewModel) //Converts to a more suitable data model with index
+            .uncollect({ $0 }) // Transforms output array into multiple outputs from the array
             .flatMap({ self.service.fetchPokemonDetails(id: "\($0.id)")
-                    .replaceError(with: .init(id: 0, name: "", image: ""))
-            })
-            .collect()
-            .append(to: &pokemonList)
+                    .replaceError(with: .init(id: 0, name: "", image: "", types: []))
+            }) //Makes another call based on upstream's output
+            .collect() //Converts again into an array
+            .append(to: &pokemonList) //Merges previous list into output
             .assign(to: &$pokemonList,
-                    completion: completion)
+                    completion: completion) //Assigns into list and completes
     }
 }
 
