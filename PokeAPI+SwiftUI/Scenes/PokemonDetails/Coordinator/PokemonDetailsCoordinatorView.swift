@@ -13,9 +13,7 @@ struct PokemonDetailsCoordinatorView<CoordinatorViewModel: PokemonDetailsCoordin
     
     var body: some View {
         NavigationView {
-            ZStack {
-                content
-            }
+            content
         }
     }
 }

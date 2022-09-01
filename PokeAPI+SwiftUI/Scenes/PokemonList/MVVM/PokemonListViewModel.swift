@@ -74,6 +74,7 @@ final class PokemonListViewModel {
                     .replaceError(with: .init(id: 0, name: "", image: "", types: []))
             }) //Makes another call based on upstream's output
             .collect() //Converts again into an array
+            .map({ $0.sorted(by: self.sortCriteria.comparisonMethod)})
             .append(to: &pokemonList) //Merges previous list into output
             .assign(to: &$pokemonList,
                     completion: completion) //Assigns into list and completes
@@ -85,14 +86,14 @@ extension PokemonListViewModel: PokemonListViewModelProtocol {
     func onAppear() {
         fetchPokemonList {
             self.isLoading = false
-            self.currentIndex += self.pageSize - 1
+            self.currentIndex += self.pageSize 
         }
     }
     
     func itemDidAppear(_ index: Int) {
         guard index >= currentIndex - 1 else { return }
-        currentIndex += pageSize
         fetchPokemonList(completion: { })
+        currentIndex += pageSize
     }
     
     func didSelectItem(_ index: Int) {

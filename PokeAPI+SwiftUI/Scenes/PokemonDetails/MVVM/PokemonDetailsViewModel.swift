@@ -4,7 +4,7 @@
 //
 //  Created by Pedro Alvarez on 29/08/22.
 //
-import Foundation
+import SwiftUI
 import Combine
 
 protocol PokemonDetailsViewModelProtocol: ObservableObject {
@@ -20,6 +20,7 @@ protocol PokemonDetailsViewModelProtocol: ObservableObject {
     var errorMessage: String { get }
     var isLoading: Bool { get }
     func onAppear()
+    func getBackgroundGradient() -> LinearGradient
 }
 
 final class PokemonDetailsViewModel: PokemonDetailsViewModelProtocol {
@@ -113,5 +114,9 @@ final class PokemonDetailsViewModel: PokemonDetailsViewModelProtocol {
             .replaceNil(with: "")
             .map({ URL(string: $0) })
             .assign(to: &$image)
+    }
+    
+    func getBackgroundGradient() -> LinearGradient {
+        LinearGradient(colors: model?.types.map({ PokemonTypeUIModel(rawValue: $0)?.color ?? Color.white }) ?? [], startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 }

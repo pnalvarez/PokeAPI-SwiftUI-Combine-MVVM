@@ -11,7 +11,8 @@ struct PokemonDetailsView<ViewModel: PokemonDetailsViewModelProtocol>: View {
     @ObservedObject var viewModel: ViewModel
     
     var body: some View {
-        Group {
+        ZStack {
+            viewModel.getBackgroundGradient()
             if viewModel.isLoading {
                 ProgressView()
             }
