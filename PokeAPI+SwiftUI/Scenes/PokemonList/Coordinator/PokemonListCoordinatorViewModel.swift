@@ -9,18 +9,22 @@ import SwiftUI
 
 enum PokemonListNavigationLinkItem: NavigationItem {
     case pokemonDetails(_ id: String)
+    case pokemonTypes
     
     @ViewBuilder
     func nextView() -> some View {
         switch self {
         case let .pokemonDetails(id):
             PokemonDetailsSceneFactory.build(id: id)
+        case .pokemonTypes:
+            PokemonTypeListSceneFactory.build()
         }
     }
 }
 
 protocol PokemonListCoordinatorViewModelProtocol {
     func navigateToPokemonDetails(_ model: PokemonListDetailsModel)
+    func navigateToPokemonType()
 }
 
 protocol PokemonListCoordinatorViewModelInput: ObservableObject {
@@ -47,5 +51,9 @@ final class PokemonListCoordinatorViewModel: PokemonListCoordinatorViewModelInpu
 extension PokemonListCoordinatorViewModel: PokemonListCoordinatorViewModelProtocol {
     func navigateToPokemonDetails(_ model: PokemonListDetailsModel) {
         navigationItem = .pokemonDetails("\(model.id)")
+    }
+    
+    func navigateToPokemonType() {
+        navigationItem = .pokemonTypes
     }
 }

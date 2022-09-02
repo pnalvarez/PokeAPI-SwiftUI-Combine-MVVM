@@ -17,6 +17,7 @@ protocol PokemonListViewModelProtocol: ObservableObject {
     func onAppear()
     func itemDidAppear(_ index: Int)
     func didSelectItem(_ index: Int)
+    func didTapTypesButton()
 }
 
 final class PokemonListViewModel {
@@ -86,18 +87,23 @@ extension PokemonListViewModel: PokemonListViewModelProtocol {
     func onAppear() {
         fetchPokemonList {
             self.isLoading = false
-            self.currentIndex += self.pageSize 
+            self.currentIndex += self.pageSize
         }
     }
     
     func itemDidAppear(_ index: Int) {
         guard index >= currentIndex - 1 else { return }
-        fetchPokemonList(completion: { })
-        currentIndex += pageSize
+        fetchPokemonList(completion: {
+            self.currentIndex += self.pageSize
+        })
     }
     
     func didSelectItem(_ index: Int) {
         coordinator.navigateToPokemonDetails(pokemonList[index])
+    }
+    
+    func didTapTypesButton() {
+        coordinator.navigateToPokemonType()
     }
 }
 

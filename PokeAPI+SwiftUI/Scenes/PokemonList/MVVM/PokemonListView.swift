@@ -11,32 +11,43 @@ struct PokemonListView<ViewModel: PokemonListViewModelProtocol>: View {
     @ObservedObject var viewModel: ViewModel
     
     var body: some View {
-        VStack {
-            if viewModel.isLoading {
-                ProgressView()
-            } else {
-                Picker("Sorting criteria", selection: $viewModel.sortCriteria) {
-                    ForEach(PokemonListSortCriteria.allCases,
-                            id: \.self) { item in
-                        Text(item.rawValue)
+        ZStack {
+            VStack {
+                if viewModel.isLoading {
+                    ProgressView()
+                } else {
+                    Picker("Sorting criteria", selection: $viewModel.sortCriteria) {
+                        ForEach(PokemonListSortCriteria.allCases,
+                                id: \.self) { item in
+                            Text(item.rawValue)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    List(viewModel.pokemonList.indexed(), id: \.index) { item in
+                        PokemonListItemView(index: "\(item.element.id)",
+                                            name: item.element.name,
+                                            url: URL(string: item.element.image), types: item.element.types)
+                        .onAppear(perform: { viewModel.itemDidAppear(item.index) })
+                        .onTapGesture {
+                            viewModel.didSelectItem(item.index)
+                        }
+                        .listStyle(.inset)
                     }
                 }
-                .pickerStyle(.segmented)
-                List(viewModel.pokemonList.indexed(), id: \.index) { item in
-                    PokemonListItemView(index: "\(item.element.id)",
-                                        name: item.element.name,
-                                        url: URL(string: item.element.image), types: item.element.types)
-                    .onAppear(perform: { viewModel.itemDidAppear(item.index) })
-                    .onTapGesture {
-                        viewModel.didSelectItem(item.index)
-                    }
-                    .listStyle(.inset)
+            }
+            .navigationTitle(viewModel.title)
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear(perform: viewModel.onAppear)
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    FloatingButton(title: "Types",
+                                   action: viewModel.didTapTypesButton)
+                    .padding(.trailing)
                 }
             }
         }
-        .navigationTitle(viewModel.title)
-        .navigationBarTitleDisplayMode(.inline)
-        .onAppear(perform: viewModel.onAppear)
     }
 }
 
